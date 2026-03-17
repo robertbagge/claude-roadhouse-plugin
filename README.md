@@ -17,7 +17,8 @@ That's it. No elaborate rubrics, no checklists. Just a direct appeal to the engi
 ## Installation
 
 ```bash
-claude plugin add robertbagge/claude-roadhouse-plugin
+claude plugin marketplace add robertbagge/claude-registry
+claude plugin install roadhouse@claude-registry
 ```
 
 ## Usage

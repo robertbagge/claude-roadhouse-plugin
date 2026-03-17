@@ -52,8 +52,8 @@ Two hooks drive the loop mechanically — Claude only needs to run `/proud` once
          ▼
 ┌─────────────────────┐
 │  Stop hook           │  Fires on every session stop
-│  rounds-stop-hook    │  Chains /proud -> /exquisite -> /proud -> ...
-└─────────────────────┘  Terminates on max iterations or both commands returning roadhouse!
+│  rounds-stop-hook    │  Chains review -> fix -> review -> fix -> ...
+└─────────────────────┘  Terminates on max iterations or both reviews returning roadhouse!
 ```
 
 ### Session isolation

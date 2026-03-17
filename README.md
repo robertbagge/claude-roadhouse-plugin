@@ -2,6 +2,18 @@
 
 Iterative code improvement loop using `/proud` and `/exquisite` introspection. Run `/rounds` to polish your code until it's world class.
 
+![roadhouse](https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExbXlwczRxYmpiemV0b3ozajFib2hlN2k3Y2Z2dWt1ejN5NmkxcHdlZiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/NCzhota4GsrKM/giphy.gif)
+![road house](https://media.tenor.com/2VXcRUPIy_EAAAAM/road-house-family-guy.gif)
+
+## `/proud` and `/exquisite`
+
+Two deceptively simple prompts that tap into something models already have but rarely use unprompted: pride in craft.
+
+`/proud` asks: *"Are you proud of the work you have done in this session?"*
+`/exquisite` asks: *"Would you call this work exquisite? Is it world class?"*
+
+That's it. No elaborate rubrics, no checklists. Just a direct appeal to the engineer hiding inside the model. The result is that Claude actually looks at what it produced with a critical eye — catching copy-paste bugs, lazy placeholder code, missing edge cases, and half-finished implementations that would otherwise sail through.
+
 ## Installation
 
 ```bash

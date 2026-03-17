@@ -2,7 +2,7 @@
 
 Iterative code improvement loop using `/proud` and `/exquisite` introspection. Run `/rounds` to polish your code until it's world class.
 
-<img src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExbXlwczRxYmpiemV0b3ozajFib2hlN2k3Y2Z2dWt1ejN5NmkxcHdlZiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/NCzhota4GsrKM/giphy.gif" height="200" alt="roadhouse"> <img src="https://media.tenor.com/2VXcRUPIy_EAAAAM/road-house-family-guy.gif" height="200" alt="road house">
+<img src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExbXlwczRxYmpiemV0b3ozajFib2hlN2k3Y2Z2dWt1ejN5NmkxcHdlZiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/NCzhota4GsrKM/giphy.gif" width="355" height="150" alt="roadhouse"> <img src="https://media.tenor.com/2VXcRUPIy_EAAAAM/road-house-family-guy.gif" width="200" height="150" alt="road house">
 
 ## `/proud` and `/exquisite`
 

@@ -35,7 +35,7 @@ Two hooks drive the loop mechanically — Claude only needs to run `/proud` once
 ┌─────────────────────┐
 │  Stop hook           │  Fires on every session stop
 │  rounds-stop-hook    │  Chains /proud -> /exquisite -> /proud -> ...
-└─────────────────────┘  Terminates on max iterations or roadhouse! verdict
+└─────────────────────┘  Terminates on max iterations or both commands returning roadhouse!
 ```
 
 ### Session isolation
@@ -85,7 +85,7 @@ JSON array of session records:
 ```
 proud ──(stop hook)──► exquisite ──(stop hook)──► proud (next iteration)
                                   │
-                                  ├── mode=done + <verdict>roadhouse!</verdict> -> active=false
+                                  ├── both proud & exquisite return roadhouse! -> active=false
                                   └── iteration >= max_iterations -> active=false
 ```
 

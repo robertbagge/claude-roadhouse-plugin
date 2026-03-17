@@ -23,11 +23,16 @@ claude plugin add robertbagge/claude-roadhouse-plugin
 ## Usage
 
 ```
-/rounds          # 1 iteration (proud -> exquisite)
-/rounds N        # N iterations
-/rounds done     # Loop until /exquisite returns <verdict>roadhouse!</verdict> (max 50)
-/rounds cancel   # Cancel active loop
+/roadhouse:rounds          # 1 iteration (proud -> exquisite)
+/roadhouse:rounds N        # N iterations
+/roadhouse:rounds done     # Loop until both return roadhouse! (max 50)
+/roadhouse:rounds cancel   # Cancel active loop
+
+/roadhouse:proud            # Standalone pride check
+/roadhouse:exquisite        # Standalone world-class check
 ```
+
+Claude Code allows you to use the shorthand `/rounds`, `/proud`, and `/exquisite` unless you have another plugin with a conflicting skill name.
 
 ## Architecture
 

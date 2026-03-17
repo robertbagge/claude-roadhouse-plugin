@@ -9,8 +9,9 @@ argument-hint: "[N | done | cancel]"
 You are running the roadhouse loop. The hooks have already initialized the loop state.
 
 Run `/proud` to begin the first iteration.
-This is a roadhouse loop — apply any improvements directly, then output your verdict.
+Reviews identify issues without editing files. If a review finds issues, the hook will
+instruct you to fix them before the next review runs.
 
-The stop hook will mechanically chain `/proud` and `/exquisite` in a loop, handling
+The stop hook will mechanically chain reviews and fixes, handling
 iteration counting and termination.
 You do not need to manage the loop yourself — just start it by running `/proud`.

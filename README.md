@@ -101,10 +101,14 @@ JSON array of session records:
 ### Phase transitions
 
 ```
-proud ──(stop hook)──► exquisite ──(stop hook)──► proud (next iteration)
-                                  │
-                                  ├── both proud & exquisite return roadhouse! -> active=false
-                                  └── iteration >= max_iterations -> active=false
+proud/exquisite ──► needs-work ──► fix ───┐
+       │                                  │
+       └──► roadhouse! ──► terminate?     │
+              │ no                         │
+              ▼                            ▼
+           next review ◄──────────────────┘
+
+terminate when: both proud & exquisite return roadhouse!, or iteration >= max_iterations
 ```
 
 ## Files

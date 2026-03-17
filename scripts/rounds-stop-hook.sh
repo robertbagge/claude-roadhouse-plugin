@@ -38,6 +38,14 @@ IFS=$'\t' read -r IDX PHASE ITERATION MAX_ITERATIONS PROUD_RESULT EXQUISITE_RESU
 
 # --- DECIDE (pure bash) ---
 
+# If review said needs-work, inject a fix turn and return early.
+# The fix turn will have no verdict tag, so it falls through to
+# normal transition logic on the next stop.
+if grep -qF '<verdict>needs-work</verdict>' <<< "$HOOK_INPUT"; then
+  echo '{"decision":"block","reason":"The review found issues. Fix them now — apply the changes described above. Do not run /proud or /exquisite. Just make the edits and stop."}'
+  exit 0
+fi
+
 # Verdict: grep directly on hook input (avoids jq for last_assistant_message)
 if grep -qF '<verdict>roadhouse!</verdict>' <<< "$HOOK_INPUT"; then
   VERDICT="roadhouse!"
@@ -82,9 +90,9 @@ jq --argjson i "$IDX" --arg cmd "$PHASE" --argjson iter "$ITERATION" --arg v "$V
 # Output block decision for phase transitions
 case "$ACTION" in
   to_exquisite)
-    echo '{"decision": "block", "reason": "Run /exquisite now. This is a roadhouse loop — apply any improvements directly, then output your verdict."}'
+    echo '{"decision":"block","reason":"Run /exquisite now. Review only — identify issues but do NOT edit any files."}'
     ;;
   to_proud)
-    echo "{\"decision\": \"block\", \"reason\": \"Starting iteration ${NEXT}/${MAX_ITERATIONS}. Run /proud now. This is a roadhouse loop — apply any improvements directly, then output your verdict.\"}"
+    echo "{\"decision\":\"block\",\"reason\":\"Starting iteration ${NEXT}/${MAX_ITERATIONS}. Run /proud now. Review only — identify issues but do NOT edit any files.\"}"
     ;;
 esac

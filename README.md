@@ -1,6 +1,6 @@
 # Roadhouse!
 
-Iterative code improvement loop using introspection. Run `/rounds` to polish your code until it's world class.
+A Claude Code plugin that uses introspection to polish code to world-class standards. After any task — whether completed by an agentic loop, manual prompting, or any other workflow — run `/rounds` and let Claude review its own work until it's genuinely proud of the result.
 
 <img src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExbXlwczRxYmpiemV0b3ozajFib2hlN2k3Y2Z2dWt1ejN5NmkxcHdlZiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/NCzhota4GsrKM/giphy.gif" width="355" height="150" alt="roadhouse"> <img src="https://media.tenor.com/2VXcRUPIy_EAAAAM/road-house-family-guy.gif" width="200" height="150" alt="road house">
 
@@ -12,7 +12,7 @@ Two deceptively simple prompts that tap into something models already have but r
 
 `/exquisite` asks: *"Would you call this work exquisite? Is it world class?"*
 
-That's it. No elaborate rubrics, no checklists. Just a direct appeal to the engineer hiding inside the model. The result is that Claude actually looks at what it produced with a critical eye — catching copy-paste bugs, lazy placeholder code, missing edge cases, and half-finished implementations that would otherwise sail through.
+That's it. No elaborate rubrics, no checklists. Just a direct appeal to the engineer hiding inside the model. There is a world-class software engineer buried in there — one that catches copy-paste bugs, spots lazy placeholder code, flags missing edge cases, and calls out half-finished implementations. These prompts give it permission to speak up. The difference between code that "works" and code that's actually good often comes down to whether anyone bothered to look at it with a critical eye. `/proud` and `/exquisite` make that second look automatic.
 
 ## Installation
 
@@ -127,6 +127,12 @@ claude-roadhouse-plugin/
     ├── rounds-stop-hook.sh
     └── rounds-userprompt-hook.sh
 ```
+
+## Inspired by Ralph Wiggum
+
+The agentic loop concept comes from the [Ralph Wiggum](https://ghuntley.com/ralph/) pattern by Geoffrey Huntley — at its core, just `while true; do claude; done`. Ralph loops until a *task is complete*: tests pass, code compiles, a completion promise is emitted. Anthropic ships an official implementation as a Claude Code plugin: [ralph-wiggum](https://github.com/anthropics/claude-code/tree/main/plugins/ralph-wiggum).
+
+Roadhouse is not a replacement for Ralph — it solves a different problem. Ralph gets the work *done*. Roadhouse makes sure the work is *good*. Run it after any task — whether that task was completed by Ralph, by you manually prompting Claude, or by any other workflow. `/rounds` asks the model to review what it built with a critical eye, iterate on what falls short, and only stop when the result meets its own standard for world class.
 
 ## Performance
 

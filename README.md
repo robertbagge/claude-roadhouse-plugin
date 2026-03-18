@@ -30,14 +30,14 @@ Any skill can be used with `/bounce` as long as it follows the review contract:
 - Output `<verdict>needs-work</verdict>` when changes are needed
 - Output `<verdict>roadhouse!</verdict>` when the review passes
 
-The built-in [`/proud`](skills/proud/SKILL.md) and [`/exquisite`](skills/exquisite/SKILL.md) skills are examples of this contract. You can write your own review skills (e.g. `/security`, `/performance`) — just follow the contract above.
+The built-in [`proud`](skills/proud/SKILL.md) and [`exquisite`](skills/exquisite/SKILL.md) skills are examples of this contract. You can write your own review skills (e.g. `/security`, `/performance`) — just follow the contract above.
 
 ## `/rounds` — the default loop
 
-*/rounds* runs `/bounce proud,exquisite` to tap into something models already have but rarely use unprompted: pride in craft.
+Conveniently wraps `/bounce proud,exquisite` to tap into something models already have but rarely use unprompted: pride in craft.
 
-- /proud asks: *"Are you proud of the work you have done in this session?"*
-- /exquisite` asks: *"Would you call this work exquisite? Is it world class?"*
+- [proud](skills/proud/SKILL.md)  asks: *"Are you proud of the work you have done in this session?"*
+- [exquisite](skills/exquisite/SKILL.md)` asks: *"Would you call this work exquisite? Is it world class?"*
 
 That's it. No elaborate rubrics, no checklists. Just a direct appeal to the engineer hiding inside the model. There is a world-class software engineer buried in there — one that catches copy-paste bugs, spots lazy placeholder code, flags missing edge cases, and calls out half-finished implementations. These prompts give it permission to speak up. The difference between code that "works" and code that's actually good often comes down to whether anyone bothered to look at it with a critical eye. `/proud` and `/exquisite` make that second look automatic.
 

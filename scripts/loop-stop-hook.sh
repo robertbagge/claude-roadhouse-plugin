@@ -45,7 +45,7 @@ IFS=$'\t' read -r IDX PHASE ITERATION MAX_ITERATIONS NEXT_PHASE IS_LAST_PHASE OT
 # The fix turn will have no verdict tag, so it falls through to
 # normal transition logic on the next stop.
 if grep -qF '<verdict>needs-work</verdict>' <<< "$HOOK_INPUT"; then
-  echo '{"decision":"block","reason":"The review found issues. Fix them now — apply the changes described above. Do not run any review commands. Just make the edits and stop."}'
+  echo '{"decision":"block","reason":"Run /autofix now."}'
   exit 0
 fi
 

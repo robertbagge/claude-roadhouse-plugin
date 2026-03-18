@@ -1,18 +1,8 @@
 # Roadhouse!
 
-A Claude Code plugin that uses introspection to polish code to world-class standards. After any task — whether completed by an agentic loop, manual prompting, or any other workflow — run `/rounds` and let Claude review its own work until it's genuinely proud of the result.
+A Claude Code plugin that uses introspection to polish code to world-class standards. Run `/bounce` with any combination of review skills, or use `/rounds` for the built-in proud + exquisite loop.
 
 <img src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExbXlwczRxYmpiemV0b3ozajFib2hlN2k3Y2Z2dWt1ejN5NmkxcHdlZiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/NCzhota4GsrKM/giphy.gif" width="355" height="150" alt="roadhouse"> <img src="https://media.tenor.com/2VXcRUPIy_EAAAAM/road-house-family-guy.gif" width="200" height="150" alt="road house">
-
-## `/proud` and `/exquisite`
-
-Two deceptively simple prompts that tap into something models already have but rarely use unprompted: pride in craft.
-
-`/proud` asks: *"Are you proud of the work you have done in this session?"*
-
-`/exquisite` asks: *"Would you call this work exquisite? Is it world class?"*
-
-That's it. No elaborate rubrics, no checklists. Just a direct appeal to the engineer hiding inside the model. There is a world-class software engineer buried in there — one that catches copy-paste bugs, spots lazy placeholder code, flags missing edge cases, and calls out half-finished implementations. These prompts give it permission to speak up. The difference between code that "works" and code that's actually good often comes down to whether anyone bothered to look at it with a critical eye. `/proud` and `/exquisite` make that second look automatic.
 
 ## Installation
 
@@ -21,24 +11,45 @@ claude plugin marketplace add robertbagge/claude-registry
 claude plugin install roadhouse@claude-registry
 ```
 
-## Usage
+## `/bounce` — the review loop
+
+`/bounce` runs any combination of review skills in a loop, fixing issues between each review until everything passes.
 
 ```
-/roadhouse:rounds          # 1 iteration (proud -> exquisite)
-/roadhouse:rounds N        # N iterations
-/roadhouse:rounds done     # Loop until both return roadhouse! (max 50)
-/roadhouse:rounds cancel   # Cancel active loop
-
-/roadhouse:bounce proud,exquisite 2       # same as /rounds 2
-/roadhouse:bounce proud,security,exquisite done  # 3 reviews per iteration
-/roadhouse:bounce proud                   # single review, 1 iteration
-/roadhouse:bounce proud,exquisite cancel  # cancel
-
-/roadhouse:proud            # Standalone pride check
-/roadhouse:exquisite        # Standalone world-class check
+/bounce proud,exquisite 2       # 2 iterations of proud → exquisite
+/bounce proud,security,exquisite done  # 3 reviews per iteration, until all pass
+/bounce proud                   # single review, 1 iteration
+/bounce proud,exquisite cancel  # cancel active loop
 ```
 
-`/bounce` is a generic review loop that accepts any comma-separated list of review commands. Each review command must be a skill that outputs `<verdict>needs-work</verdict>` or `<verdict>roadhouse!</verdict>`. `/rounds` is equivalent to `/bounce proud,exquisite`.
+### Review skill contract
+
+Any skill can be used with `/bounce` as long as it follows the review contract:
+
+- Review the work and identify issues, but **do not edit files**
+- Output `<verdict>needs-work</verdict>` when changes are needed
+- Output `<verdict>roadhouse!</verdict>` when the review passes
+
+The built-in [`/proud`](skills/proud/SKILL.md) and [`/exquisite`](skills/exquisite/SKILL.md) skills are examples of this contract. You can write your own review skills (e.g. `/security`, `/performance`) — just follow the contract above.
+
+## `/rounds` — the default loop
+
+`/rounds` runs `/bounce proud,exquisite` to tap into something models already have but rarely use unprompted: pride in craft.
+
+`/proud` asks: *"Are you proud of the work you have done in this session?"*
+
+`/exquisite` asks: *"Would you call this work exquisite? Is it world class?"*
+
+That's it. No elaborate rubrics, no checklists. Just a direct appeal to the engineer hiding inside the model. There is a world-class software engineer buried in there — one that catches copy-paste bugs, spots lazy placeholder code, flags missing edge cases, and calls out half-finished implementations. These prompts give it permission to speak up. The difference between code that "works" and code that's actually good often comes down to whether anyone bothered to look at it with a critical eye. `/proud` and `/exquisite` make that second look automatic.
+
+```
+/rounds          # 1 iteration (proud → exquisite)
+/rounds N        # N iterations
+/rounds done     # Loop until both return roadhouse! (max 50)
+/rounds cancel   # Cancel active loop
+```
+
+After any task — whether completed by an agentic loop, manual prompting, or any other workflow — run `/rounds` and let Claude review its own work with a critical eye.
 
 Claude Code allows you to use the shorthand `/rounds`, `/bounce`, `/proud`, and `/exquisite` unless you have another plugin with a conflicting skill name.
 

@@ -2,12 +2,19 @@
 set -euo pipefail
 
 # Roadhouse loop state initializer.
-# Accepts two arguments: SESSION_ID and ARG (the rounds argument).
+# Accepts up to three arguments: SESSION_ID, ARG (iteration argument), COMMANDS (comma-separated).
 # Called by both the PreToolUse hook and UserPromptSubmit hook.
 
 STATE_FILE=".claude/roadhouse-loop.local.json"
 SESSION_ID="${1:?session_id required}"
 ARG="${2:-}"
+COMMANDS="${3:-proud,exquisite}"
+
+# Validate commands: lowercase letters, digits, hyphens, separated by commas
+if ! [[ "$COMMANDS" =~ ^[a-z][a-z0-9-]*(,[a-z][a-z0-9-]*)*$ ]]; then
+  echo "Invalid commands: $COMMANDS" >&2
+  exit 1
+fi
 
 # --- Cancel ---
 if [[ "$ARG" == "cancel" ]]; then
@@ -57,6 +64,7 @@ echo "$EXISTING" | jq \
   --argjson max "$MAX_ITERATIONS" \
   --arg started "$STARTED_AT" \
   --arg sid "$SESSION_ID" \
+  --arg cmds "$COMMANDS" \
   '
   [.[] | select(.started_at >= $cutoff and .session_id != $sid)] + [{
     session_id: $sid,
@@ -64,11 +72,8 @@ echo "$EXISTING" | jq \
     iteration: 1,
     max_iterations: $max,
     mode: $mode,
-    phase: "proud",
+    phase: ($cmds | split(",") | .[0]),
     started_at: $started,
-    commands: [
-      {command: "proud", iteration: -1, result: "not_run"},
-      {command: "exquisite", iteration: -1, result: "not_run"}
-    ]
+    commands: [($cmds | split(","))[] | {command: ., iteration: -1, result: "not_run"}]
   }]
   ' > "${STATE_FILE}.tmp" && mv "${STATE_FILE}.tmp" "$STATE_FILE"

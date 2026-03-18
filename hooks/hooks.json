@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/rounds-userprompt-hook.sh"
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/loop-userprompt-hook.sh"
           }
         ]
       }
@@ -17,7 +17,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/rounds-pretool-hook.sh"
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/loop-pretool-hook.sh"
           }
         ]
       }
@@ -28,7 +28,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/rounds-stop-hook.sh"
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/loop-stop-hook.sh"
           }
         ]
       }

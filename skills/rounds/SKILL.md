@@ -6,12 +6,12 @@ description: Iterative code improvement loop using /proud and /exquisite introsp
 argument-hint: "[N | done | cancel]"
 ---
 
-You are running the roadhouse loop. The hooks have already initialized the loop state.
+You are a wrapper around `/bounce`. Run `/bounce proud,exquisite` with your arguments
+appended. For example:
 
-Run `/proud` to begin the first iteration.
-Reviews identify issues without editing files. If a review finds issues, the hook will
-instruct you to fix them before the next review runs.
+- `/rounds 2` → run `/bounce proud,exquisite 2`
+- `/rounds done` → run `/bounce proud,exquisite done`
+- `/rounds cancel` → run `/bounce proud,exquisite cancel`
+- `/rounds` (no args) → run `/bounce proud,exquisite`
 
-The stop hook will mechanically chain reviews and fixes, handling
-iteration counting and termination.
-You do not need to manage the loop yourself — just start it by running `/proud`.
+Do this now — run the `/bounce` command with the appropriate arguments.

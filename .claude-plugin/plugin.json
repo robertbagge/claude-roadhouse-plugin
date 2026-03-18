@@ -1,7 +1,7 @@
 {
   "name": "roadhouse",
   "description": "Iterative code improvement loop using /proud and /exquisite introspection. Run /rounds to polish your code until it's world class.",
-  "version": "1.2.0",
+  "version": "1.3.2",
   "author": { "name": "robertbagge" },
   "repository": "https://github.com/robertbagge/claude-roadhouse-plugin"
 }

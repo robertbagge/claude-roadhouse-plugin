@@ -22,10 +22,13 @@ RECORD=$(jq -r --slurpfile state "$STATE_FILE" '
     null |
     if . == null then ""
     else
-      .value.commands as $cmds |
-      [.key, .value.phase, .value.iteration, .value.max_iterations,
-       ($cmds[] | select(.command == "proud") | .result),
-       ($cmds[] | select(.command == "exquisite") | .result)] | @tsv
+      .value as $v | .value.commands as $cmds |
+      ($cmds | map(.command)) as $names |
+      ($names | index($v.phase)) as $cur_idx |
+      (if $cur_idx == (($names | length) - 1) then $names[0] else $names[$cur_idx + 1] end) as $next_phase |
+      (if $cur_idx == (($names | length) - 1) then "true" else "false" end) as $is_last |
+      ([$cmds[] | select(.command != $v.phase) | .result == "roadhouse!"] | all) as $others_ok |
+      [.key, $v.phase, $v.iteration, $v.max_iterations, $next_phase, $is_last, $others_ok] | @tsv
     end
   end
 ' <<< "$HOOK_INPUT")
@@ -34,7 +37,7 @@ if [[ -z "$RECORD" ]]; then
   exit 0
 fi
 
-IFS=$'\t' read -r IDX PHASE ITERATION MAX_ITERATIONS PROUD_RESULT EXQUISITE_RESULT <<< "$RECORD"
+IFS=$'\t' read -r IDX PHASE ITERATION MAX_ITERATIONS NEXT_PHASE IS_LAST_PHASE OTHERS_ALL_ROADHOUSE <<< "$RECORD"
 
 # --- DECIDE (pure bash) ---
 
@@ -42,7 +45,7 @@ IFS=$'\t' read -r IDX PHASE ITERATION MAX_ITERATIONS PROUD_RESULT EXQUISITE_RESU
 # The fix turn will have no verdict tag, so it falls through to
 # normal transition logic on the next stop.
 if grep -qF '<verdict>needs-work</verdict>' <<< "$HOOK_INPUT"; then
-  echo '{"decision":"block","reason":"The review found issues. Fix them now — apply the changes described above. Do not run /proud or /exquisite. Just make the edits and stop."}'
+  echo '{"decision":"block","reason":"The review found issues. Fix them now — apply the changes described above. Do not run any review commands. Just make the edits and stop."}'
   exit 0
 fi
 
@@ -53,46 +56,39 @@ else
   VERDICT="needs-work"
 fi
 
-# Compute post-update command results
-if [[ "$PHASE" == "proud" ]]; then
-  NEW_PROUD="$VERDICT"; NEW_EXQUISITE="$EXQUISITE_RESULT"
-else
-  NEW_PROUD="$PROUD_RESULT"; NEW_EXQUISITE="$VERDICT"
-fi
-
 # Determine transition action
 ACTION="none"
 NEXT=0
-if [[ "$NEW_PROUD" == "roadhouse!" ]] && [[ "$NEW_EXQUISITE" == "roadhouse!" ]]; then
+if [[ "$VERDICT" == "roadhouse!" ]] && [[ "$OTHERS_ALL_ROADHOUSE" == "true" ]]; then
   ACTION="deactivate"
-elif [[ "$PHASE" == "exquisite" ]] && [[ "$ITERATION" -ge "$MAX_ITERATIONS" ]]; then
+elif [[ "$IS_LAST_PHASE" == "true" ]] && [[ "$ITERATION" -ge "$MAX_ITERATIONS" ]]; then
   ACTION="deactivate"
-elif [[ "$PHASE" == "proud" ]]; then
-  ACTION="to_exquisite"
-elif [[ "$PHASE" == "exquisite" ]]; then
-  ACTION="to_proud"
+elif [[ "$IS_LAST_PHASE" == "true" ]]; then
+  ACTION="to_next_iteration"
   NEXT=$((ITERATION + 1))
+else
+  ACTION="to_next_phase"
 fi
 
 # --- WRITE (1 jq spawn) ---
 # Update command row + apply transition, read from file, write atomically
 jq --argjson i "$IDX" --arg cmd "$PHASE" --argjson iter "$ITERATION" --arg v "$VERDICT" \
-  --arg action "$ACTION" --argjson next "$NEXT" '
+  --arg action "$ACTION" --argjson next "$NEXT" --arg next_phase "$NEXT_PHASE" '
   .[$i].commands |= map(
     if .command == $cmd then .iteration = $iter | .result = $v else . end
   ) |
   if $action == "deactivate" then .[$i].active = false
-  elif $action == "to_exquisite" then .[$i].phase = "exquisite"
-  elif $action == "to_proud" then .[$i].iteration = $next | .[$i].phase = "proud"
+  elif $action == "to_next_phase" then .[$i].phase = $next_phase
+  elif $action == "to_next_iteration" then .[$i].iteration = $next | .[$i].phase = $next_phase
   else . end
 ' "$STATE_FILE" > "${STATE_FILE}.tmp" && mv "${STATE_FILE}.tmp" "$STATE_FILE"
 
 # Output block decision for phase transitions
 case "$ACTION" in
-  to_exquisite)
-    echo '{"decision":"block","reason":"Run /exquisite now. Review only — identify issues but do NOT edit any files."}'
+  to_next_phase)
+    echo "{\"decision\":\"block\",\"reason\":\"Run /${NEXT_PHASE} now. Review only — identify issues but do NOT edit any files.\"}"
     ;;
-  to_proud)
-    echo "{\"decision\":\"block\",\"reason\":\"Starting iteration ${NEXT}/${MAX_ITERATIONS}. Run /proud now. Review only — identify issues but do NOT edit any files.\"}"
+  to_next_iteration)
+    echo "{\"decision\":\"block\",\"reason\":\"Starting iteration ${NEXT}/${MAX_ITERATIONS}. Run /${NEXT_PHASE} now. Review only — identify issues but do NOT edit any files.\"}"
     ;;
 esac

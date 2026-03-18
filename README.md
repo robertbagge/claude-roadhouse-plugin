@@ -29,31 +29,38 @@ claude plugin install roadhouse@claude-registry
 /roadhouse:rounds done     # Loop until both return roadhouse! (max 50)
 /roadhouse:rounds cancel   # Cancel active loop
 
+/roadhouse:bounce proud,exquisite 2       # same as /rounds 2
+/roadhouse:bounce proud,security,exquisite done  # 3 reviews per iteration
+/roadhouse:bounce proud                   # single review, 1 iteration
+/roadhouse:bounce proud,exquisite cancel  # cancel
+
 /roadhouse:proud            # Standalone pride check
 /roadhouse:exquisite        # Standalone world-class check
 ```
 
-Claude Code allows you to use the shorthand `/rounds`, `/proud`, and `/exquisite` unless you have another plugin with a conflicting skill name.
+`/bounce` is a generic review loop that accepts any comma-separated list of review commands. Each review command must be a skill that outputs `<verdict>needs-work</verdict>` or `<verdict>roadhouse!</verdict>`. `/rounds` is equivalent to `/bounce proud,exquisite`.
+
+Claude Code allows you to use the shorthand `/rounds`, `/bounce`, `/proud`, and `/exquisite` unless you have another plugin with a conflicting skill name.
 
 ## Architecture
 
-Two hooks drive the loop mechanically — Claude only needs to run `/proud` once to start.
+Two hooks drive the loop mechanically — Claude only needs to run the first review command once to start.
 
 ```
 ┌─────────────────────┐
-│  PreToolUse hook     │  Fires on Skill() calls, filters for "rounds"
-│  rounds-pretool-hook │  Handles: setup, cancel, argument validation
+│  PreToolUse hook     │  Fires on Skill() calls, filters for "bounce"
+│  loop-pretool-hook   │  Handles: setup, cancel, argument validation
 └────────┬────────────┘
-         │ creates state record with session_id
+         │ creates state record with session_id and commands list
          ▼
 ┌─────────────────────┐
-│  SKILL.md            │  Runs /proud to begin first iteration
+│  SKILL.md            │  Runs first review command to begin
 └────────┬────────────┘
          ▼
 ┌─────────────────────┐
 │  Stop hook           │  Fires on every session stop
-│  rounds-stop-hook    │  Chains review -> fix -> review -> fix -> ...
-└─────────────────────┘  Terminates on max iterations or both reviews returning roadhouse!
+│  loop-stop-hook      │  Chains review -> fix -> review -> fix -> ...
+└─────────────────────┘  Terminates on max iterations or all reviews returning roadhouse!
 ```
 
 ### Session isolation
@@ -64,7 +71,7 @@ sessions in the same repo do not interfere with each other.
 
 ### Stale session cleanup
 
-The PreToolUse hook prunes records older than 7 days on every `/rounds` invocation.
+Records older than 7 days are pruned on every loop initialization (i.e. every `/bounce` or `/rounds` invocation).
 
 ## State file
 
@@ -81,7 +88,11 @@ JSON array of session records:
     "max_iterations": 3,
     "mode": "count",
     "phase": "proud",
-    "started_at": "2026-03-16T10:00:00Z"
+    "started_at": "2026-03-16T10:00:00Z",
+    "commands": [
+      {"command": "proud", "iteration": -1, "result": "not_run"},
+      {"command": "exquisite", "iteration": -1, "result": "not_run"}
+    ]
   }
 ]
 ```
@@ -95,20 +106,23 @@ JSON array of session records:
 | `iteration`      | integer | Current iteration (1-indexed)                                |
 | `max_iterations` | integer | Limit. `1` for `/rounds`, `N` for `/rounds N`, `50` for `done` |
 | `mode`           | string  | `"count"` (fixed iterations) or `"done"` (until roadhouse!) |
-| `phase`          | string  | `"proud"` or `"exquisite"` — current phase within iteration |
+| `phase`          | string  | Current review command name (cycles through `commands` array)|
 | `started_at`     | string  | ISO 8601 UTC timestamp of loop creation                      |
+| `commands`       | array   | Review commands with per-command iteration and result tracking|
+| `commands[].command`   | string  | Skill name (e.g. `"proud"`, `"exquisite"`, `"security"`)  |
+| `commands[].iteration` | integer | Last iteration this command ran in (`-1` = not yet run)    |
+| `commands[].result`    | string  | `"not_run"`, `"needs-work"`, or `"roadhouse!"`             |
 
 ### Phase transitions
 
-```
-proud/exquisite ──► needs-work ──► fix ───┐
-       │                                  │
-       └──► roadhouse! ──► terminate?     │
-              │ no                         │
-              ▼                            ▼
-           next review ◄──────────────────┘
+Phase cycles through the `commands` array in order. After the last command, iteration increments and phase wraps to the first command.
 
-terminate when: both proud & exquisite return roadhouse!, or iteration >= max_iterations
+```
+command[0] → command[1] → ... → command[N-1] → command[0] (iteration++)
+    ↕              ↕                   ↕
+  fix turn       fix turn           fix turn
+
+terminate when: all commands return roadhouse!, or iteration >= max_iterations on last phase
 ```
 
 ## Files
@@ -118,6 +132,8 @@ claude-roadhouse-plugin/
 ├── .claude-plugin/
 │   └── plugin.json
 ├── skills/
+│   ├── bounce/
+│   │   └── SKILL.md
 │   ├── rounds/
 │   │   └── SKILL.md
 │   ├── proud/
@@ -127,10 +143,10 @@ claude-roadhouse-plugin/
 ├── hooks/
 │   └── hooks.json
 └── scripts/
-    ├── rounds-init.sh
-    ├── rounds-pretool-hook.sh
-    ├── rounds-stop-hook.sh
-    └── rounds-userprompt-hook.sh
+    ├── loop-init.sh
+    ├── loop-pretool-hook.sh
+    ├── loop-stop-hook.sh
+    └── loop-userprompt-hook.sh
 ```
 
 ## Inspired by Ralph Wiggum
@@ -141,10 +157,10 @@ Roadhouse is not a replacement for Ralph — it solves a different problem. Ralp
 
 ## Performance
 
-Both hooks use tiered fast paths to minimize cost for non-rounds work:
+Both hooks use tiered fast paths to minimize cost for non-loop work:
 
 **PreToolUse** (fires on every Skill call):
-1. `grep` stdin for `"rounds"` — no jq spawned for other skills
+1. `grep` stdin for `"bounce"` — no jq spawned for other skills
 
 **Stop hook** (fires on every session stop):
 1. No state file -> exit (no stdin read)

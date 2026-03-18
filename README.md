@@ -34,11 +34,10 @@ The built-in [`/proud`](skills/proud/SKILL.md) and [`/exquisite`](skills/exquisi
 
 ## `/rounds` — the default loop
 
-`/rounds` runs `/bounce proud,exquisite` to tap into something models already have but rarely use unprompted: pride in craft.
+*/rounds* runs `/bounce proud,exquisite` to tap into something models already have but rarely use unprompted: pride in craft.
 
-`/proud` asks: *"Are you proud of the work you have done in this session?"*
-
-`/exquisite` asks: *"Would you call this work exquisite? Is it world class?"*
+- /proud asks: *"Are you proud of the work you have done in this session?"*
+- /exquisite` asks: *"Would you call this work exquisite? Is it world class?"*
 
 That's it. No elaborate rubrics, no checklists. Just a direct appeal to the engineer hiding inside the model. There is a world-class software engineer buried in there — one that catches copy-paste bugs, spots lazy placeholder code, flags missing edge cases, and calls out half-finished implementations. These prompts give it permission to speak up. The difference between code that "works" and code that's actually good often comes down to whether anyone bothered to look at it with a critical eye. `/proud` and `/exquisite` make that second look automatic.
 

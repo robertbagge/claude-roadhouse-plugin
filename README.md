@@ -135,7 +135,7 @@ command[0] → command[1] → ... → command[N-1] → command[0] (iteration++)
 terminate when: all commands return roadhouse!, or iteration >= max_iterations on last phase
 ```
 
-Fix turns use the [`/autofix`](skills/autofix/SKILL.md) skill, which can be swapped for alternative fix strategies.
+Fix turns use the [`/autofix`](skills/autofix/SKILL.md) skill, which can be swapped for alternative fix strategies. The autofix skill is invoked by the stop hook when a review emits a needs-work verdict.
 
 ## Files
 

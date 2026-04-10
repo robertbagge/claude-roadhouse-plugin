@@ -5,7 +5,7 @@ set -euo pipefail
 # Accepts up to three arguments: SESSION_ID, ARG (iteration argument), COMMANDS (comma-separated).
 # Called by both the PreToolUse hook and UserPromptSubmit hook.
 
-STATE_FILE="$HOME/tmp/roadhouse/loop-state.json"
+STATE_FILE="${XDG_CACHE_HOME:-$HOME/.cache}/roadhouse/loop-state.json"
 SESSION_ID="${1:?session_id required}"
 ARG="${2:-}"
 COMMANDS="${3:-proud,exquisite}"

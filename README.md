@@ -85,7 +85,7 @@ Records older than 7 days are pruned on every loop initialization (i.e. every `/
 
 ## State file
 
-**Path:** `$HOME/tmp/roadhouse/loop-state.json`
+**Path:** `${XDG_CACHE_HOME:-$HOME/.cache}/roadhouse/loop-state.json`
 
 JSON array of session records:
 

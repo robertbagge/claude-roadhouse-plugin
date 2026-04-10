@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-STATE_FILE="$HOME/tmp/roadhouse/loop-state.json"
+STATE_FILE="${XDG_CACHE_HOME:-$HOME/.cache}/roadhouse/loop-state.json"
 
 # Fast path: no state file or no active sessions
 if [[ ! -f "$STATE_FILE" ]] || ! grep -q '"active": true' "$STATE_FILE"; then

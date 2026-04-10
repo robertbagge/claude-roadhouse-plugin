@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-STATE_FILE=".claude/roadhouse-loop.local.json"
+STATE_FILE="$HOME/tmp/roadhouse/loop-state.json"
 
 # Fast path: no state file or no active sessions
 if [[ ! -f "$STATE_FILE" ]] || ! grep -q '"active": true' "$STATE_FILE"; then
@@ -72,6 +72,7 @@ fi
 
 # --- WRITE (1 jq spawn) ---
 # Update command row + apply transition, read from file, write atomically
+mkdir -p "$(dirname "$STATE_FILE")"
 jq --argjson i "$IDX" --arg cmd "$PHASE" --argjson iter "$ITERATION" --arg v "$VERDICT" \
   --arg action "$ACTION" --argjson next "$NEXT" --arg next_phase "$NEXT_PHASE" '
   .[$i].commands |= map(

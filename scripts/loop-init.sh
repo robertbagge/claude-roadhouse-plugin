@@ -5,7 +5,7 @@ set -euo pipefail
 # Accepts up to three arguments: SESSION_ID, ARG (iteration argument), COMMANDS (comma-separated).
 # Called by both the PreToolUse hook and UserPromptSubmit hook.
 
-STATE_FILE=".claude/roadhouse-loop.local.json"
+STATE_FILE="${XDG_CACHE_HOME:-$HOME/.cache}/roadhouse/loop-state.json"
 SESSION_ID="${1:?session_id required}"
 ARG="${2:-}"
 COMMANDS="${3:-proud,exquisite}"
@@ -50,6 +50,8 @@ fi
 STARTED_AT=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 CUTOFF=$(date -u -v-7d +"%Y-%m-%dT%H:%M:%SZ" 2>/dev/null \
   || date -u -d '7 days ago' +"%Y-%m-%dT%H:%M:%SZ")
+
+mkdir -p "$(dirname "$STATE_FILE")"
 
 if [[ -f "$STATE_FILE" ]]; then
   EXISTING=$(cat "$STATE_FILE")
